@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SPACEX TOURNAMENT | THE FUTURE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #00f2ff;
+            --neon-white: #ffffff;
+            --rog-red: #ff0000;
+        }
+
+        /* --- STRUKTUR ASLI TETAP DIJAGA --- */
+        body { background-color: #000; margin: 0; padding: 0; overflow-x: hidden; font-family: 'Orbitron', sans-serif; position: relative; min-height: 100vh; }
+        .gaming-bg { position: fixed; inset: 0; background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%), linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%); z-index: -2; }
+        .grid-overlay { position: fixed; inset: 0; background-image: linear-gradient(to right, #111 1px, transparent 1px), linear-gradient(to bottom, #111 1px, transparent 1px); background-size: 50px 50px; mask-image: radial-gradient(ellipse at center, black, transparent 80%); z-index: -1; pointer-events: none; }
+        
+        .spacex-main-title, .spacex-form-text { 
+            font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 900; letter-spacing: 6px; text-transform: uppercase; 
+            line-height: 1; margin-bottom: 10px;
+            animation: lightningColor 3s steps(1, end) infinite, neonGlow 1.5s ease-in-out infinite alternate;
+            display: inline-block;
+        }
+
+        @keyframes lightningColor {
+            0% { color: #ff0000; text-shadow: 0 0 20px #ff0000; }
+            33% { color: #00f2ff; text-shadow: 0 0 20px #00f2ff; }
+            66% { color: #ffffff; text-shadow: 0 0 30px #ffffff; }
+            100% { color: #ff0000; text-shadow: 0 0 20px #ff0000; }
+        }
+
+        @keyframes neonGlow {
+            from { filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); transform: scale(1); }
+            to { filter: drop-shadow(0 0 15px rgba(255,255,255,0.6)); transform: scale(1.01); }
+        }
+
+        .star { position: fixed; top: -10px; width: 2px; height: 2px; border-radius: 50%; pointer-events: none; z-index: -1; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(105vh) translateX(50px); opacity: 0; } }
+
+        .header-container { 
+            position: relative; 
+            margin: 50px auto; 
+            z-index: 10; 
+            width: 90%; 
+            max-width: 850px; 
+            padding-bottom: 100px; 
+        }
+        
+        .welcome-text { margin-top: 15px; font-size: 0.9rem; color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 242, 255, 0.8); letter-spacing: 2px; font-weight: 700; }
+        .choice-text { margin-top: 25px; color: var(--neon-blue); background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); padding: 15px 25px; border-radius: 10px; border-left: 5px solid var(--rog-red); max-width: fit-content; }
+        
+        #session-wrapper { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 20px; 
+            margin-top: 20px; 
+        }
+
+        .session-table-container { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 20px; cursor: pointer; transition: 0.3s; }
+        .session-table-container:hover { transform: scale(1.02); border-color: var(--neon-blue); }
+        .session-header { color: var(--neon-white); font-size: 1.2rem; font-weight: 900; border-bottom: 2px solid var(--rog-red); padding-bottom: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .session-time { background: var(--rog-red); padding: 2px 10px; font-size: 0.8rem; border-radius: 4px; }
+        .session-detail { color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .session-detail strong { color: var(--neon-blue); }
+        
+        /* Modifikasi: Session Full atau Closed */
+        .session-table-container.is-full, .session-table-container.is-closed { opacity: 0.5; pointer-events: none; filter: grayscale(1); border-color: #333; }
+
+        .btn-cek-data { margin: 40px auto; width: 100%; max-width: 400px; background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 15px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; transition: 0.3s; cursor: pointer; display: block; text-align: center; }
+        .btn-cek-data:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 20px var(--neon-blue); }
+
+        #registration-page { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .form-card-gaming { background: linear-gradient(145deg, rgba(15, 15, 15, 0.95), rgba(5, 5, 5, 1)); border: 1px solid rgba(0, 242, 255, 0.4); border-radius: 24px; padding: 40px; width: 100%; max-width: 480px; position: relative; overflow: hidden; }
+        .input-label-gaming { font-size: 11px; color: var(--neon-blue); font-weight: 800; margin-bottom: 6px; display: block; letter-spacing: 1.5px; text-transform: uppercase; }
+        .input-field-gaming { width: 100%; background: rgba(30, 30, 30, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); padding: 14px; color: #fff; border-radius: 10px; margin-bottom: 22px; outline: none; font-family: 'Inter'; transition: 0.4s; font-size: 0.9rem; }
+        .btn-submit-gaming { width: 100%; background: linear-gradient(90deg, #00f2ff, #ffffff); color: #000; padding: 16px; font-weight: 900; border-radius: 10px; cursor: pointer; text-transform: uppercase; border: none; font-family: 'Orbitron'; }
+
+        /* --- PERBAIKAN BEDAH BAGIAN SIDEBAR & DATABASE --- */
+        #sidebar { position: fixed; top: 0; right: -110%; width: 100%; max-width: 480px; height: 100%; background: #080808; color: white; z-index: 200; transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px; overflow-y: auto; border-left: 2px solid #1a1a1a; box-sizing: border-box; }
+        #sidebar.active { right: 0; }
+        .sidebar-nav-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 15px; border-bottom: 1px solid #222; scrollbar-width: none; -ms-overflow-style: none; }
+        .sidebar-nav-container::-webkit-scrollbar { display: none; }
+        
+        .nav-session-btn { background: #111; color: #555; border: 1px solid #222; padding: 8px 15px; border-radius: 6px; font-size: 12px; font-weight: 800; cursor: pointer; white-space: nowrap; }
+        .nav-session-btn.active { background: var(--rog-red); color: white; border-color: var(--rog-red); }
+
+        .db-team-card { 
+            background: #0d0d0d; 
+            border: 1px solid #1a1a1a; 
+            border-radius: 12px; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            position: relative; 
+            border-left: 4px solid var(--rog-red);
+            width: 100%;
+            box-sizing: border-box;
+            word-wrap: break-word;
+        }
+        .db-label { font-size: 9px; color: #555; text-transform: uppercase; font-weight: 800; display: block; margin-bottom: 2px; }
+        .db-value { font-size: 13px; color: #fff; font-weight: 600; font-family: 'Inter'; overflow-wrap: anywhere; }
+        .db-value.team-name { color: var(--neon-blue); font-family: 'Orbitron'; font-size: 14px; display: block; margin-bottom: 5px; }
+        
+        .copy-row { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            background: #151515; 
+            padding: 8px 10px; 
+            border-radius: 6px; 
+            margin-top: 10px; 
+            gap: 10px;
+        }
+        .copy-info-text { font-size: 10px; color: #ccc; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .btn-salin { background: #222; color: var(--neon-blue); border: 1px solid #333; font-size: 10px; padding: 4px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; flex-shrink: 0; }
+
+        .reset-neon-btn {
+            background: rgba(0, 242, 255, 0.1);
+            color: var(--neon-blue);
+            border: 1px solid var(--neon-blue);
+            padding: 4px 10px;
+            font-size: 10px;
+            font-weight: 900;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin-right: 5px;
+        }
+        .close-neon-btn {
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff0000;
+            border: 1px solid #ff0000;
+            padding: 4px 10px;
+            font-size: 10px;
+            font-weight: 900;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main-page">
+        <div class="gaming-bg"></div>
+        <div class="grid-overlay"></div>
+        <div class="header-container">
+            <h1 class="spacex-main-title">SPACEX</h1>
+            <p class="welcome-text">Selamat datang di halaman resmi pendaftaran!</p>
+            <div class="choice-text">Silakan pilih kategori pendaftaran yang sesuai:</div>
+            <div id="session-wrapper"></div>
+            <button onclick="toggleSidebar()" class="btn-cek-data">Cek Data Pendaftar</button>
+        </div>
+    </div>
+
+    <div id="registration-page">
+        <div class="gaming-bg"></div>
+        <div class="grid-overlay"></div>
+        <div class="form-card-gaming">
+            <button onclick="closeReg()" class="absolute -top-12 left-0 text-[#00f2ff] text-[11px] uppercase font-black tracking-widest">← Back to Dashboard</button>
+            <div class="mb-8 text-center">
+                <h2 class="spacex-form-text">SPACEX</h2>
+                <p id="sesi-title" class="text-center text-[10px] text-gray-500 mt-3 tracking-[0.5em] uppercase font-bold">SESSION 13:00</p>
+            </div>
+            <form id="reg-form">
+                <label class="input-label-gaming">Nama Team :</label>
+                <input type="text" id="team-name" class="input-field-gaming" required>
+                <label class="input-label-gaming">Nama Kapten (IGN) :</label>
+                <input type="text" id="captain-name" class="input-field-gaming" required>
+                <label class="input-label-gaming">Nomor WhatsApp :</label>
+                <input type="tel" id="phone-number" class="input-field-gaming" placeholder="08..." pattern="[0][8][0-9]{8,11}" required>
+                <button type="submit" id="btn-reg" class="btn-submit-gaming">Register Team</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="sidebar">
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex flex-col gap-2">
+                <h2 class="text-xl font-black italic">DATABASE</h2>
+                <div class="flex gap-2">
+                    <button id="btn-reset-yaser" class="reset-neon-btn" style="display:none;" onclick="doReset()">RESET</button>
+                    <button id="btn-close-yaser" class="close-neon-btn" style="display:none;" onclick="toggleSesiStatus()">CLOSE SESI</button>
+                </div>
+            </div>
+            <button onclick="toggleSidebar()" class="text-2xl text-gray-500">✕</button>
+        </div>
+        <div class="sidebar-nav-container" id="nav-sessions"></div>
+        <div id="storage-list"></div>
+    </div>
+
+    <script>
+        const DB_BASE = "https://spacex-tournament-default-rtdb.firebaseio.com/";
+        const DB_URL = DB_BASE + "pendaftar.json";
+        const STATUS_URL = DB_BASE + "status_sesi.json";
+        
+        const listSesi = ['13:00', '14:00', '15:00', '16:00', '19:00', '20:00', '21:00', '22:00'];
+        let currentSesiSelected = "";
+        let dbSesiView = "13:00";
+        let statusSesiData = {};
+
+        const isAdmin = new URLSearchParams(window.location.search).get('admin')?.toLowerCase() === "yaser";
+
+        const wrapper = document.getElementById('session-wrapper');
+        listSesi.forEach(s => {
+            wrapper.innerHTML += `
+                <div id="btn-${s}" onclick="openReg('${s}')" class="session-table-container">
+                    <div class="session-header"><span>SESI TOURNAMENT</span><span class="session-time">${s} WIB</span></div>
+                    <div class="session-detail"><span>Status:</span><strong id="status-${s}">...</strong></div>
+                    <div class="session-detail"><span>Slot Tersedia:</span><strong id="slot-${s}">-</strong></div>
+                </div>
+            `;
+        });
+
+        function createStars() {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            star.style.backgroundColor = '#00f2ff';
+            document.body.appendChild(star);
+            setTimeout(() => star.remove(), 5000);
+        }
+        setInterval(createStars, 150);
+
+        async function updateDisplay() {
+            try {
+                // Ambil data pendaftar dan status tutup sesi
+                const [resPendaftar, resStatus] = await Promise.all([
+                    fetch(DB_URL),
+                    fetch(STATUS_URL)
+                ]);
+                
+                const data = await resPendaftar.json();
+                statusSesiData = (await resStatus.json()) || {};
+                const allTeams = data ? Object.values(data) : [];
+
+                listSesi.forEach(s => {
+                    const count = allTeams.filter(t => t.sesi === s).length;
+                    const sisa = 12 - count;
+                    const isClosedManual = statusSesiData[s.replace(':', '')] === "closed";
+                    
+                    const statusText = document.getElementById(`status-${s}`);
+                    const container = document.getElementById(`btn-${s}`);
+                    
+                    document.getElementById(`slot-${s}`).innerText = sisa + " Slot";
+
+                    if (isClosedManual) {
+                        statusText.innerText = "CLOSED";
+                        statusText.style.color = "red";
+                        container.classList.add('is-closed');
+                    } else if (sisa <= 0) {
+                        statusText.innerText = "FULL";
+                        statusText.style.color = "red";
+                        container.classList.add('is-full');
+                    } else {
+                        statusText.innerText = "OPEN";
+                        statusText.style.color = "var(--neon-blue)";
+                        container.classList.remove('is-full', 'is-closed');
+                    }
+                });
+
+                // Update UI Admin di Sidebar
+                const btnReset = document.getElementById('btn-reset-yaser');
+                const btnClose = document.getElementById('btn-close-yaser');
+                
+                if(isAdmin) {
+                    btnReset.style.display = "inline-block";
+                    btnClose.style.display = "inline-block";
+                    btnReset.innerText = `RESET ${dbSesiView}`;
+                    
+                    const isNowClosed = statusSesiData[dbSesiView.replace(':', '')] === "closed";
+                    btnClose.innerText = isNowClosed ? `OPEN ${dbSesiView}` : `CLOSE ${dbSesiView}`;
+                    btnClose.style.borderColor = isNowClosed ? "var(--neon-blue)" : "#ff0000";
+                    btnClose.style.color = isNowClosed ? "var(--neon-blue)" : "#ff0000";
+                }
+
+                const listContainer = document.getElementById('storage-list');
+                listContainer.innerHTML = "";
+
+                if(data) {
+                    let slotNo = 1;
+                    Object.keys(data).forEach(key => {
+                        const t = data[key];
+                        if(t.sesi === dbSesiView) {
+                            listContainer.innerHTML += `
+                                <div class="db-team-card">
+                                    <div class="db-label">SLOT #${slotNo++}</div>
+                                    <div style="margin-bottom:8px;">
+                                        <span class="db-label">Nama Team :</span>
+                                        <span class="db-value team-name">${t.teamName}</span>
+                                    </div>
+                                    <div style="margin-bottom:8px;">
+                                        <span class="db-label">Nama Kapten :</span>
+                                        <span class="db-value">${t.captain}</span>
+                                    </div>
+                                    <div>
+                                        <span class="db-label">Nomor WhatsApp :</span>
+                                        <span class="db-value">${t.phone}</span>
+                                    </div>
+                                    <div class="copy-row">
+                                        <span class="copy-info-text">${t.captain} (${t.phone})</span>
+                                        <button class="btn-salin" onclick="copyText('${t.captain} (${t.phone})')">SALIN</button>
+                                    </div>
+                                    <div class="btn-delete-db" style="display: ${isAdmin ? 'block' : 'none'}; position:absolute; top:15px; right:15px; color:#444; font-size:18px; cursor:pointer;" onclick="delData('${key}')">✕</div>
+                                </div>
+                            `;
+                        }
+                    });
+                }
+            } catch(e) {}
+        }
+
+        async function toggleSesiStatus() {
+            if(!isAdmin) return;
+            const sesiKey = dbSesiView.replace(':', '');
+            const currentStatus = statusSesiData[sesiKey];
+            const newStatus = currentStatus === "closed" ? "open" : "closed";
+            
+            try {
+                await fetch(`${DB_BASE}status_sesi/${sesiKey}.json`, {
+                    method: 'PUT',
+                    body: JSON.stringify(newStatus)
+                });
+                updateDisplay();
+            } catch(e) { alert("Gagal mengubah status sesi"); }
+        }
+
+        async function doReset() {
+            if(!isAdmin) return alert("Akses Ditolak!");
+            if(confirm(`KOSONGKAN SEMUA PENDAFTAR DI SESI ${dbSesiView}?`)) {
+                try {
+                    const res = await fetch(DB_URL);
+                    const data = await res.json();
+                    if(data) {
+                        const keysToDelete = Object.keys(data).filter(k => data[k].sesi === dbSesiView);
+                        if(keysToDelete.length === 0) return alert("Tidak ada data di sesi ini!");
+                        for(let k of keysToDelete) {
+                            await fetch(`${DB_BASE}pendaftar/${k}.json`, { method: 'DELETE' });
+                        }
+                        alert(`Data Sesi ${dbSesiView} Telah Direset!`);
+                        updateDisplay();
+                    }
+                } catch(e) { alert("Terjadi kesalahan saat reset."); }
+            }
+        }
+
+        document.getElementById('reg-form').onsubmit = async (e) => {
+            e.preventDefault();
+            document.getElementById('btn-reg').innerText = "WAIT...";
+            const team = document.getElementById('team-name').value;
+            const capt = document.getElementById('captain-name').value;
+            const phone = document.getElementById('phone-number').value;
+            try {
+                const res = await fetch(DB_URL);
+                const data = await res.json();
+                if(data && Object.values(data).some(t => t.teamName.toLowerCase() === team.toLowerCase() && t.sesi === currentSesiSelected)) {
+                    alert("Team ini sudah terdaftar di sesi ini!");
+                    location.reload();
+                    return;
+                }
+                await fetch(DB_URL, { method: 'POST', body: JSON.stringify({ teamName: team, captain: capt, phone: phone, sesi: currentSesiSelected }) });
+                location.reload();
+            } catch(e) { alert("Gagal mendaftar!"); }
+        };
+
+        function copyText(v) { navigator.clipboard.writeText(v); alert("Tersalin ke Clipboard!"); }
+        
+        async function delData(k) {
+            if(!isAdmin) return;
+            if(confirm("Hapus team ini secara permanen?")) {
+                await fetch(`${DB_BASE}pendaftar/${k}.json`, { method: 'DELETE' });
+                updateDisplay();
+            }
+        }
+
+        function openReg(s) { 
+            const isClosed = statusSesiData[s.replace(':', '')] === "closed";
+            if(isClosed) return alert("Maaf, Sesi ini telah ditutup oleh Admin.");
+            
+            currentSesiSelected = s; 
+            document.getElementById('sesi-title').innerText = "SESSION " + s; 
+            document.getElementById('registration-page').style.display = 'flex'; 
+        }
+        
+        function closeReg() { document.getElementById('registration-page').style.display = 'none'; }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); renderNav(); updateDisplay(); }
+        
+        function renderNav() {
+            const nav = document.getElementById('nav-sessions');
+            nav.innerHTML = listSesi.map(s => `<button class="nav-session-btn ${s === dbSesiView ? 'active' : ''}" onclick="dbSesiView='${s}'; updateDisplay(); renderNav();">${s}</button>`).join('');
+        }
+
+        window.onload = updateDisplay;
+    </script>
+</body>
+</html>
