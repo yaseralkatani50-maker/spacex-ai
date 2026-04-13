@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SpaceX Klasemen - Locked & Auto-wrap</title>
+    <style>
+        :root {
+            --bg: #ffffff; 
+            --header: #f2f2f2; 
+            --row-even: #ffffff;
+            --row-odd: #e0e0e0; 
+            --accent: #333333; 
+            --text: #000000; 
+            --border: #888888; 
+            --line-bold: #000000; 
+            --name-color: #000000; 
+            --danger: #c0392b; 
+            --btn-bg: #005f73;
+            --locked: #f9f9f9; 
+        }
+
+        * { box-sizing: border-box; }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: var(--bg); color: var(--text); 
+            margin: 0; padding: 5px; display: flex; flex-direction: column; align-items: center;
+        }
+
+        .header { text-align: center; margin-bottom: 10px; width: 100%; }
+        h2 { color: #000; margin: 0; font-size: 1rem; text-transform: uppercase; font-weight: bold; }
+        
+        .input-sesi {
+            background: #fff; border: 1px solid #000;
+            color: #000; font-size: 0.8rem; font-weight: bold; text-align: center;
+            padding: 3px 10px; border-radius: 5px; outline: none; width: 200px; margin-top: 5px;
+        }
+        
+        .wrapper { 
+            width: 100%; 
+            max-width: 100%; 
+            border: 2px solid var(--line-bold); 
+            margin-bottom: 15px; 
+            background: #fff;
+            overflow: hidden;
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            table-layout: fixed; 
+            font-size: 9px; 
+        }
+        
+        th, td { 
+            border: 1px solid var(--border); 
+            padding: 4px 1px; 
+            text-align: center; 
+            /* Perubahan: Membiarkan cell menyesuaikan tinggi jika teks panjang */
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+        }
+
+        tbody tr:nth-child(even) { background-color: var(--row-even); }
+        tbody tr:nth-child(odd) { background-color: var(--row-odd); }
+        tbody tr { border-bottom: 1.5px solid var(--line-bold); }
+
+        th { 
+            background: #d1d1d1; 
+            color: #000; 
+            font-size: 8px; 
+            font-weight: bold; 
+            border-bottom: 2px solid var(--line-bold); 
+        }
+        
+        .border-right-bold { border-right: 2px solid var(--line-bold) !important; }
+
+        /* FIX: Nama Kapten bisa panjang dan otomatis turun ke bawah */
+        .td-name { 
+            text-align: left; 
+            width: 75px; 
+            font-weight: bold; 
+            border-right: 2px solid var(--line-bold) !important; 
+            padding-left: 3px;
+            white-space: normal !important;
+            word-break: break-all;
+        } 
+        
+        .col-score { width: 25px; }
+        .col-total { 
+            width: 35px; 
+            background: #bdbdbd !important; 
+            font-weight: bold; 
+            border-left: 2px solid var(--line-bold) !important; 
+        }
+        .col-rank { width: 30px; font-weight: bold; }
+
+        /* FIX: Input di tabel utama dibuat seolah-olah teks biasa agar tidak terlihat seperti kolom input */
+        .input-name {
+            background: transparent; color: var(--name-color); border: none;
+            width: 100%; padding: 2px; font-weight: bold; font-size: 9px;
+            outline: none; text-transform: uppercase;
+            pointer-events: none; /* Tidak bisa diklik */
+        }
+
+        .input-score {
+            background: transparent; color: black; border: none;
+            width: 100%; text-align: center; font-size: 9px; outline: none;
+            pointer-events: none; /* Tidak bisa diklik */
+        }
+        
+        .td-readonly { color: #000; font-weight: bold; }
+
+        .summary { 
+            width: 100%; 
+            display: flex; 
+            justify-content: flex-start; 
+            margin-bottom: 60px; 
+            padding-left: 2px;
+        }
+        .summary table { 
+            table-layout: auto; 
+            width: 180px; 
+            border: 2px solid var(--line-bold); 
+            font-size: 8px;
+        }
+        .summary td { padding: 4px; font-weight: bold; border: 1px solid var(--line-bold); }
+
+        .control-panel { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; border-top: 1px dashed #ccc; padding-top: 20px; }
+        .panel-box { background: #fff; border: 1.5px solid #000; border-radius: 5px; padding: 10px; }
+        .panel-title { color: #000; font-size: 0.8rem; margin: 0 0 5px 0; border-bottom: 1px solid #000; font-weight: bold; }
+        
+        textarea { width: 100%; background: #fff; color: #000; border: 1px solid #000; padding: 5px; font-size: 0.7rem; }
+        .btn-action { width: 100%; background: #000; color: #fff; border: none; padding: 8px; cursor: pointer; font-weight: bold; font-size: 0.75rem; border-radius: 4px; }
+        .btn-send { background: #27ae60; margin-top: 5px; }
+        .btn-delete-list { background: #c0392b; }
+
+        .gold { background: #f1c40f !important; } 
+        .silver { background: #bdc3c7 !important; } 
+        .bronze { background: #cd7f32 !important; color: #fff; }
+        .reset-btn { position: fixed; bottom: 10px; right: 10px; background: var(--danger); color: white; border: none; padding: 5px 10px; font-size: 9px; border-radius: 4px; opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>KLASEMEN POINT - FT BY MANK X SpaceX</h2>
+        <input type="text" class="input-sesi" id="inputSesi" value="HASIL SESI" oninput="saveData()">
+    </div>
+
+    <div class="wrapper">
+        <table id="mainTable">
+            <thead>
+                <tr>
+                    <th rowspan="2" class="td-name">NAMA KAPTEN</th>
+                    <th colspan="3" class="border-right-bold">Match 1</th>
+                    <th colspan="3" class="border-right-bold">Match 2</th>
+                    <th colspan="3" class="border-right-bold">Match 3</th>
+                    <th rowspan="2" class="col-total">TOTAL POINT</th>
+                    <th rowspan="2" class="col-rank">JUARA</th>
+                </tr>
+                <tr>
+                    <th class="col-score">PLACE</th><th class="col-score">KILL</th><th class="col-score border-right-bold">POINT</th>
+                    <th class="col-score">PLACE</th><th class="col-score">KILL</th><th class="col-score border-right-bold">POINT</th>
+                    <th class="col-score">PLACE</th><th class="col-score">KILL</th><th class="col-score border-right-bold">POINT</th>
+                </tr>
+            </thead>
+            <tbody id="teamRows"></tbody>
+        </table>
+    </div>
+
+    <div class="summary">
+        <table>
+            <thead><tr><th colspan="2" style="background:#d1d1d1; color:#000; border: 1px solid #000;">JUARA & MOST KILL TEAM</th></tr></thead>
+            <tbody>
+                <tr style="background:#fff;"><td>JUARA 1</td><td id="s1">-</td></tr>
+                <tr style="background:#e0e0e0;"><td>JUARA 2</td><td id="s2">-</td></tr>
+                <tr style="background:#fff;"><td>JUARA 3</td><td id="s3">-</td></tr>
+                <tr style="background:#e0e0e0;"><td style="color: #c0392b;">MOST KILL</td><td id="smk" style="color: #c0392b;">-</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="control-panel">
+        <div class="panel-box">
+            <h3 class="panel-title">1. Paste Data Pendaftaran</h3>
+            <textarea id="rawText" rows="3" placeholder="Paste list di sini..."></textarea>
+            <div style="display: flex; gap: 5px; margin-top: 5px;">
+                <button class="btn-action" onclick="extractNames()">Masukkan Nama</button>
+                <button class="btn-action btn-delete-list" onclick="document.getElementById('rawText').value=''">Hapus List</button>
+            </div>
+        </div>
+
+        <div class="panel-box">
+            <h3 class="panel-title">2. Input Hasil Match</h3>
+            <select id="targetMatch" style="width:100%; padding:5px; margin-bottom:5px; border: 1px solid #000;">
+                <option value="1">Match 1</option>
+                <option value="2">Match 2</option>
+                <option value="3">Match 3</option>
+            </select>
+            <table style="width:100%; font-size: 8px;">
+                <tbody id="inputTableBodyInner"></tbody>
+            </table>
+            <button class="btn-action btn-send" onclick="sendToMainTable()">🚀 KIRIM DATA</button>
+        </div>
+    </div>
+
+    <button class="reset-btn" onclick="resetAllData()">Reset</button>
+
+    <script>
+        const pointSystem = { 1:12, 2:9, 3:8, 4:7, 5:6, 6:5, 7:4, 8:3, 9:2, 10:1, 11:0, 12:0 };
+        
+        function initTable() {
+            let savedData = JSON.parse(localStorage.getItem('ff_pro_data')) || [];
+            document.getElementById('inputSesi').value = localStorage.getItem('ff_pro_sesi') || "HASIL SESI";
+            const mainContainer = document.getElementById('teamRows');
+            const inputContainer = document.getElementById('inputTableBodyInner');
+            
+            mainContainer.innerHTML = "";
+            inputContainer.innerHTML = "";
+
+            let rankOptions = `<option value="">-</option>`;
+            for(let r=1; r<=12; r++) rankOptions += `<option value="${r}">#${r}</option>`;
+
+            for (let i = 0; i < 12; i++) {
+                let d = savedData[i] || { name: "", m1:{p:"",k:""}, m2:{p:"",k:""}, m3:{p:"",k:""} };
+                let trMain = document.createElement('tr');
+                // FIX: Tambahkan readonly dan tabindex="-1" agar tidak bisa diakses user
+                trMain.innerHTML = `
+                    <td class="td-name"><input type="text" value="${d.name}" class="input-name" readonly tabindex="-1"></td>
+                    <td><input type="text" value="${d.m1.p}" class="input-score m1-p" readonly tabindex="-1"></td>
+                    <td><input type="text" value="${d.m1.k}" class="input-score m1-k" readonly tabindex="-1"></td>
+                    <td class="td-readonly m1-pt border-right-bold">0</td>
+                    <td><input type="text" value="${d.m2.p}" class="input-score m2-p" readonly tabindex="-1"></td>
+                    <td><input type="text" value="${d.m2.k}" class="input-score m2-k" readonly tabindex="-1"></td>
+                    <td class="td-readonly m2-pt border-right-bold">0</td>
+                    <td><input type="text" value="${d.m3.p}" class="input-score m3-p" readonly tabindex="-1"></td>
+                    <td><input type="text" value="${d.m3.k}" class="input-score m3-k" readonly tabindex="-1"></td>
+                    <td class="td-readonly m3-pt border-right-bold">0</td>
+                    <td class="td-readonly total-col total-pt">0</td>
+                    <td class="td-readonly rank-col rank-cell"></td>
+                `;
+                mainContainer.appendChild(trMain);
+
+                let trInput = document.createElement('tr');
+                let bgClass = (i % 2 !== 0) ? 'background:#e0e0e0;' : 'background:#ffffff;';
+                trInput.innerHTML = `
+                    <td class="input-panel-name" style="text-align:left; border-bottom:1px solid #000; ${bgClass} white-space:normal; word-break:break-all;">${d.name || "-"}</td>
+                    <td style="border-bottom:1px solid #000; ${bgClass}"><select class="input-panel-rank">${rankOptions}</select></td>
+                    <td style="border-bottom:1px solid #000; ${bgClass}"><input type="text" class="input-panel-kl" placeholder="K" style="width:30px; text-align:center;"></td>
+                `;
+                inputContainer.appendChild(trInput);
+            }
+            update();
+        }
+
+        function extractNames() {
+            let rawText = document.getElementById('rawText').value.split('\n');
+            let names = [];
+            for(let line of rawText) {
+                let text = line.trim();
+                if(text !== '') {
+                    text = text.replace(/^\d+[\.\s\-]+/, '').replace(/\(\d+\)/g, '').replace(/[\u2705\u274E\u2702\u2714\u2716]/g, '');
+                    let cleanName = text.replace(/\s+/g, ' ').trim().toUpperCase();
+                    if(cleanName) names.push(cleanName);
+                }
+            }
+            let inputs = document.querySelectorAll('.input-name');
+            inputs.forEach((inp, i) => { if(names[i]) inp.value = names[i]; });
+            updateInputTableNames();
+            update();
+        }
+
+        function updateInputTableNames() {
+            let mainNames = document.querySelectorAll('.input-name');
+            let panelNames = document.querySelectorAll('.input-panel-name');
+            mainNames.forEach((n, i) => panelNames[i].innerText = n.value || "-");
+        }
+
+        function processSmartSum(val) {
+            if (!val || val.toString().trim() === "") return 0;
+            let str = val.toString().trim();
+            let total = 0;
+            if (str.includes(',') || str.includes(' ')) {
+                let parts = str.split(/[\s,]+/);
+                parts.forEach(p => { if (p !== "" && !isNaN(p)) total += parseInt(p); });
+            } else {
+                for (let char of str) { if (!isNaN(char)) total += parseInt(char); }
+            }
+            return total;
+        }
+
+        function sendToMainTable() {
+            let match = document.getElementById('targetMatch').value;
+            let inputRows = document.querySelectorAll('#inputTableBodyInner tr');
+            let mainRows = document.querySelectorAll('#teamRows tr');
+            for(let i=0; i<12; i++) {
+                let r = inputRows[i].querySelector('.input-panel-rank').value;
+                let kVal = inputRows[i].querySelector('.input-panel-kl').value;
+                let hasilFinalKill = (kVal !== "") ? processSmartSum(kVal) : "";
+                if(r !== "" || kVal !== "") {
+                    mainRows[i].querySelector(`.m${match}-p`).value = r;
+                    mainRows[i].querySelector(`.m${match}-k`).value = hasilFinalKill;
+                }
+                inputRows[i].querySelector('.input-panel-rank').value = "";
+                inputRows[i].querySelector('.input-panel-kl').value = "";
+            }
+            update();
+            alert("Data Match " + match + " Berhasil Masuk!");
+        }
+
+        function update() {
+            let rows = document.querySelectorAll('#teamRows tr');
+            let dataList = [];
+            rows.forEach(row => {
+                let tPt = 0, tKl = 0;
+                let name = row.querySelector('.input-name').value;
+                for (let m=1; m<=3; m++) {
+                    let p = parseInt(row.querySelector(`.m${m}-p`).value) || 0;
+                    let k = parseInt(row.querySelector(`.m${m}-k`).value) || 0;
+                    let pt = (pointSystem[p] || 0) + k;
+                    row.querySelector(`.m${m}-pt`).innerText = pt;
+                    tPt += pt; tKl += k;
+                }
+                row.querySelector('.total-pt').innerText = tPt;
+                dataList.push({ name: name || "-", pts: tPt, kls: tKl, el: row });
+            });
+
+            let sorted = [...dataList].sort((a,b) => b.pts - a.pts || b.kls - a.kls);
+            dataList.forEach(t => {
+                let rCell = t.el.querySelector('.rank-cell');
+                let rank = sorted.findIndex(x => x === t) + 1;
+                rCell.innerText = rank <= 3 ? rank : "";
+                rCell.className = "td-readonly rank-col rank-cell " + (rank==1?'gold':rank==2?'silver':rank==3?'bronze':'');
+            });
+
+            if(sorted.length > 0) {
+                document.getElementById('s1').innerText = sorted[0].name;
+                document.getElementById('s2').innerText = sorted[1].name;
+                document.getElementById('s3').innerText = sorted[2].name;
+                let mk = [...dataList].sort((a,b) => b.kls - a.kls)[0];
+                document.getElementById('smk').innerText = (mk ? mk.name : "-") + " (" + (mk ? mk.kls : 0) + ")";
+            }
+            saveData();
+        }
+
+        function saveData() {
+            let arr = [];
+            document.querySelectorAll('#teamRows tr').forEach(row => {
+                arr.push({
+                    name: row.querySelector('.input-name').value,
+                    m1: { p: row.querySelector('.m1-p').value, k: row.querySelector('.m1-k').value },
+                    m2: { p: row.querySelector('.m2-p').value, k: row.querySelector('.m2-k').value },
+                    m3: { p: row.querySelector('.m3-p').value, k: row.querySelector('.m3-k').value }
+                });
+            });
+            localStorage.setItem('ff_pro_data', JSON.stringify(arr));
+            localStorage.setItem('ff_pro_sesi', document.getElementById('inputSesi').value);
+        }
+
+        function resetAllData() {
+            if(confirm("Hapus Semua Data?")) { localStorage.removeItem('ff_pro_data'); initTable(); }
+        }
+
+        window.onload = initTable;
+    </script>
+</body>
+</html>
